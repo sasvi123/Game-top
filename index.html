@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Enuri's Birthday Quest</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎂</text></svg>">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Modern Import Map for Three.js & Addons (Local Offline Support) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./libs/three.module.js",
+      "three/addons/": "./libs/jsm/"
+    }
+  }
+  </script>
+</head>
+
+<body>
+  <!-- 3D Canvas -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD Overlay -->
+  <div id="hud-container">
+    <!-- Top Left: Cake Slices Collection -->
+    <div class="hud-card cake-counter-card ui-interactive">
+      <div class="counter-header">
+        <span class="counter-icon">🎂</span>
+        <span class="counter-title">Cake Slices</span>
+        <span id="cake-counter-text" class="counter-val">0 / 6</span>
+      </div>
+      <div id="cake-slots-container" class="slots-row"></div>
+    </div>
+
+    <!-- Top Center: Cake Radar & Compass -->
+    <div class="hud-card radar-card ui-interactive">
+      <div class="radar-content">
+        <div class="radar-dial">
+          <div id="radar-needle" class="radar-arrow">▲</div>
+        </div>
+        <div class="radar-info">
+          <div id="radar-target-name" class="radar-target">Searching for Cake...</div>
+          <div id="radar-distance" class="radar-dist">-- m</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Right: Actions & Audio -->
+    <div class="hud-top-right ui-interactive">
+      <button id="quest-log-btn" class="hud-btn" title="Open Quest Log (Q)">
+        <span>📜</span> <span class="btn-label">Quest Log [Q]</span>
+      </button>
+      <button id="audio-toggle-btn" class="hud-btn" title="Toggle Sound">
+        🔊 Sound: On
+      </button>
+    </div>
+
+    <!-- Center: Toast Notifications -->
+    <div id="toast-banner" class="toast-banner"></div>
+
+    <!-- Speed Boost Indicator -->
+    <div id="speed-boost-indicator" class="boost-indicator">
+      <span class="boost-icon">⚡</span>
+      <span class="boost-text">TURBO SPEED BOOST!</span>
+      <div class="boost-bar-track">
+        <div class="boost-bar"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Left: Keyboard Controls Helper -->
+    <div class="hud-card controls-card">
+      <div class="controls-title">🎮 Controls</div>
+      <div class="control-row"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span>Move</span></div>
+      <div class="control-row"><kbd>Space</kbd> <span>Jump</span></div>
+      <div class="control-row"><kbd>Shift</kbd> <span>Sprint</span></div>
+      <div class="control-row"><kbd>Mouse Drag</kbd> <span>Look around</span></div>
+      <div class="control-row"><kbd>Scroll</kbd> <span>Zoom</span></div>
+      <div class="control-row"><kbd>Q</kbd> <span>Quest Log</span> &bull; <kbd>R</kbd> <span>Respawn</span></div>
+    </div>
+
+    <!-- Bottom Right: Quick Respawn Button -->
+    <div class="hud-bottom-right ui-interactive">
+      <button id="respawn-btn" class="hud-btn respawn-btn" title="Respawn at Campfire (R)">
+        <span>🏕️</span> <span class="btn-label">Respawn [R]</span>
+      </button>
+    </div>
+
+    <!-- Touch / Mobile On-Screen Controls -->
+    <div id="touch-controls" class="touch-controls ui-interactive">
+      <div id="touch-joystick-area" class="joystick-container">
+        <div id="touch-joystick-knob" class="joystick-knob"></div>
+      </div>
+      <div class="touch-buttons-container">
+        <button id="touch-sprint-btn" class="touch-btn sprint-btn">⚡ Run</button>
+        <button id="touch-jump-btn" class="touch-btn jump-btn">JUMP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start / Welcome Screen Overlay -->
+  <div id="start-overlay" class="overlay-backdrop">
+    <div class="start-modal">
+      <div class="modal-badge">✨ Special Birthday Adventure</div>
+      <h1 class="game-title">Enuri's Birthday Quest</h1>
+      <h2 class="game-subtitle">The Lost Cake Mystery 🎂</h2>
+      <p class="story-desc">
+        A magical celebration was prepared for Enuri's Birthday Quest, but a sudden gust of enchanted wind scattered all <strong>6
+          legendary cake slices</strong> across the hills, forest heights, and secret rocky shores!
+      </p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">🍄</div>
+          <div class="feature-text"><strong>Bouncy Mushrooms</strong><br>Spring high into the air</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🧭</div>
+          <div class="feature-text"><strong>Cake Radar</strong><br>Follow the compass beam</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🍰</div>
+          <div class="feature-text"><strong>6 Delicious Slices</strong><br>Strawberry, Matcha & more</div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🎉</div>
+          <div class="feature-text"><strong>Assemble the Cake</strong><br>Grand Picnic Pavilion finale</div>
+        </div>
+      </div>
+      <button id="start-game-btn" class="primary-btn pulse-anim"
+        onclick="if(window.__startGame){window.__startGame();}else{document.getElementById('start-overlay').style.display='none';}">
+        ▶ START ADVENTURE
+      </button>
+    </div>
+  </div>
+
+  <!-- Quest Journal Modal -->
+  <div id="quest-modal" class="overlay-backdrop modal-hidden">
+    <div class="quest-book-modal ui-interactive">
+      <div class="modal-header">
+        <h2>📜 Adventurer's Cake Journal</h2>
+        <button id="quest-close-btn" class="close-btn">&times;</button>
+      </div>
+      <p class="journal-subtitle">
+        Follow the cryptic riddles whispered by the meadow breeze to discover each scattered cake slice:
+      </p>
+      <div id="quest-clues-list" class="clues-list"></div>
+      <div class="modal-footer">
+        <button onclick="document.getElementById('quest-modal').classList.remove('active')" class="secondary-btn">
+          Back to Exploring
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Victory Celebration Modal -->
+  <div id="victory-modal" class="overlay-backdrop modal-hidden">
+    <div class="victory-card ui-interactive">
+      <div class="confetti-emoji">🎉🎂✨</div>
+      <h1>Enuri the CAKE Eater!</h1>
+      <p class="victory-desc">
+        You found all 6 legendary cake slices and wish Enuri a Delightfull Birthday!
+      </p>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num" id="victory-time">0m 0s</div>
+          <div class="stat-label">Adventure Time</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">6 / 6</div>
+          <div class="stat-label">Slices Gathered</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Island Secrets</div>
+        </div>
+      </div>
+      <div class="victory-actions">
+        <button id="victory-roam-btn" class="primary-btn">
+          ✨ Keep Exploring (Free Roam)
+        </button>
+        <button onclick="window.location.reload()" class="secondary-btn">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Game Script -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

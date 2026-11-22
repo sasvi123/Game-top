@@ -1,0 +1,20 @@
+{
+  "name": "enuris-birthday-quest",
+  "version": "1.0.0",
+  "description": "3D Island Adventure Game - Enuri's Birthday Quest",
+  "type": "module",
+  "scripts": {
+    "dev": "python server.py",
+    "start": "python server.py"
+  },
+  "keywords": [
+    "threejs",
+    "game",
+    "3d",
+    "adventure",
+    "gltf",
+    "webgl"
+  ],
+  "author": "",
+  "license": "MIT"
+}
