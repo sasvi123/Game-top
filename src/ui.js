@@ -8,8 +8,56 @@ export class UIManager {
     this.toastTimer = null;
     this.startTime = Date.now();
     this.jumpsCount = 0;
+    this.playerCount = null;
 
     this.initElements();
+    this.initPlayerCount();
+  }
+
+  async initPlayerCount() {
+    const cached = localStorage.getItem('enuri_player_count');
+    if (cached) {
+      this.playerCount = cached;
+      this.updatePlayerCountDisplays(cached);
+    }
+
+    try {
+      // CounterAPI provides free persistent counting with CORS enabled
+      const isNewSession = !sessionStorage.getItem('enuri_counted_session');
+      const action = isNewSession ? 'up' : 'get';
+      const url = `https://counterapi.com/api/enuris-birthday-quest/${action}/players`;
+
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.value !== undefined) {
+          this.playerCount = data.value;
+          sessionStorage.setItem('enuri_counted_session', 'true');
+          localStorage.setItem('enuri_player_count', data.value);
+          this.updatePlayerCountDisplays(data.value);
+          return;
+        }
+      }
+    } catch (e) {
+      console.log('Player count note (using cached/fallback):', e);
+    }
+
+    if (!this.playerCount) {
+      const fallback = localStorage.getItem('enuri_player_count') || '1';
+      this.playerCount = fallback;
+      this.updatePlayerCountDisplays(fallback);
+    }
+  }
+
+  updatePlayerCountDisplays(count) {
+    const formatted = Number(count).toLocaleString();
+    const startVal = document.getElementById('start-count-val');
+    const hudVal = document.getElementById('hud-count-val');
+    const victoryRank = document.getElementById('victory-player-rank');
+
+    if (startVal) startVal.textContent = formatted;
+    if (hudVal) hudVal.textContent = formatted;
+    if (victoryRank) victoryRank.textContent = `#${formatted}`;
   }
 
   initElements() {
@@ -218,6 +266,11 @@ export class UIManager {
 
     if (timeElem) {
       timeElem.textContent = timeStr;
+    }
+
+    const rankElem = document.getElementById('victory-player-rank');
+    if (rankElem && this.playerCount) {
+      rankElem.textContent = `#${Number(this.playerCount).toLocaleString()}`;
     }
 
     modal.classList.add('active');

@@ -1,5 +1,7 @@
 # 🎂 Enuri's Birthday Quest: The Lost Cake Mystery
 
+[![Players Explored](https://hits.sh/sasvi123.github.io/Game-top.svg?label=Adventurers%20Played&color=ff477e&labelColor=2b580c)](https://sasvi123.github.io/Game-top/)
+
 A delightful, cozy 3D island exploration & adventure game built with **Three.js** around the **`Small-Meadow-Island.glb`** 3D model!
 
 ---

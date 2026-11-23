@@ -51,6 +51,11 @@
 
     <!-- Top Right: Actions & Audio -->
     <div class="hud-top-right ui-interactive">
+      <div class="hud-card player-count-badge" id="hud-player-badge"
+        title="Total players who have explored Enuri's Quest">
+        <span class="badge-dot"></span>
+        <span>👥 <strong id="hud-count-val">...</strong> Wished</span>
+      </div>
       <button id="quest-log-btn" class="hud-btn" title="Open Quest Log (Q)">
         <span>📜</span> <span class="btn-label">Quest Log [Q]</span>
       </button>
@@ -108,7 +113,8 @@
       <h1 class="game-title">Enuri's Birthday Quest</h1>
       <h2 class="game-subtitle">The Lost Cake Mystery 🎂</h2>
       <p class="story-desc">
-        A magical celebration was prepared for Enuri's Birthday Quest, but a sudden gust of enchanted wind scattered all <strong>6
+        A magical celebration was prepared for Enuri's Birthday Quest, but a sudden gust of enchanted wind scattered all
+        <strong>6
           legendary cake slices</strong> across the hills, forest heights, and secret rocky shores!
       </p>
       <div class="features-grid">
@@ -133,6 +139,10 @@
         onclick="if(window.__startGame){window.__startGame();}else{document.getElementById('start-overlay').style.display='none';}">
         ▶ START ADVENTURE
       </button>
+      <div class="player-count-pill" id="start-player-count">
+        <span class="live-indicator"></span>
+        <span>👥 <strong id="start-count-val">...</strong> adventurers have played</span>
+      </div>
     </div>
   </div>
 
@@ -164,6 +174,10 @@
         You found all 6 legendary cake slices and wish Enuri a Delightfull Birthday!
       </p>
       <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num" id="victory-player-rank">#...</div>
+          <div class="stat-label">Adventurer No.</div>
+        </div>
         <div class="stat-box">
           <div class="stat-num" id="victory-time">0m 0s</div>
           <div class="stat-label">Adventure Time</div>
